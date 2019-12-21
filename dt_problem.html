@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+	<body>
+
+    <script type="module">
+    import * as THREE from 'https://threejs.org/build/three.module.js';
+    import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+    
+    var renderer;
+    var scene;
+    var camera;
+
+    var v_fontloader = new THREE.FontLoader();                
+    v_fontloader.load
+    (
+        'https://threejs.org/examples/fonts/droid/droid_sans_bold.typeface.json',
+        function (theFont) 
+        {
+            renderer = new THREE.WebGLRenderer( { antialias: true } );
+            camera = new THREE.PerspectiveCamera( 33, window.innerWidth / window.innerHeight, 1, 2000 );
+            var controls = new OrbitControls( camera, renderer.domElement );
+            controls.minDistance = 2;
+            controls.maxDistance = 150;
+
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            camera.position.set( 0, 0, 5 );
+
+            var spotLight1 = new THREE.SpotLight( 0xffffff, 1 );
+            spotLight1.position.set( 0, 0, 10 );
+            
+            
+            var back = new THREE.Mesh( 
+                new THREE.SphereBufferGeometry(1, 32, 32),
+                new THREE.MeshPhysicalMaterial( 
+                    {
+                        color: 0xffff00,
+                        depthTest: false, //This line is the problem.
+                        transparency: 0.5,
+                        transparent: true
+                    }
+                ) 
+            );
+
+            var front = new THREE.Mesh(
+                new THREE.TextGeometry( 'X', {font: theFont, size: 0.2, height: 0.04}) , 
+                new THREE.MeshBasicMaterial( { color: 0xff0000 } )
+            );
+            front.position.z = 2;
+
+            
+            scene = new THREE.Scene();
+            scene.add( spotLight1 );
+            scene.add(back);
+            scene.add(front);
+            
+            renderer.render( scene, camera );
+            animate();
+        }
+    );
+    
+    function animate() 
+    {
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+    }        
+    
+    </script>
+	</body>
+</html>
